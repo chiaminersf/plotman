@@ -113,7 +113,22 @@ def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
                 dstdir = random.choice(unused_dirs)
             else:
                 dstdir = max(dir2ph, key=dir2ph.get)
-
+            
+            _, _, free_space = shutil.disk_usage(dstdir)
+            free_space_in_GiB = free_space // (2**30)
+            if free_space_in_GiB < 102:
+                print("Not Enough space: current directory " + str(dstdir) + " has " + str(free_space_in_GiB) + " Gib")
+                while free_space_in_GiB < 102:
+                    if unused_dirs: 
+                        dstdir = random.choice(unused_dirs)
+                    else:
+                        dstdir = max(dir2ph, key=dir2ph.get)
+                    _, _, free_space = shutil.disk_usage(dstdir)
+                    free_space_in_GiB = free_space // (2**30)
+                    time.sleep(5)
+            else:
+                print("Enough space: current directory " + str(dstdir) + " has " + str(free_space_in_GiB) + " Gib")
+                
             logfile = os.path.join(
                 dir_cfg.log, pendulum.now().isoformat(timespec='microseconds').replace(':', '_') + '.log'
             )
