@@ -7,6 +7,7 @@ import readline  # For nice CLI
 import subprocess
 import sys
 import time
+import shutil
 from datetime import datetime
 
 import pendulum
@@ -59,6 +60,14 @@ def phases_permit_new_job(phases, d, sched_cfg, dir_cfg):
     # tmpdir_stagger_phase_limit default is 1, as declared in configuration.py
     if len([p for p in phases if p < milestone]) >= sched_cfg.tmpdir_stagger_phase_limit:
         return False
+    
+    _, _, free_space = shutil.disk_usage(d)
+    free_space_in_GiB = free_space // (2**30)
+    if free_space_in_GiB < 102:
+        print("Not Enough space: current directory " + d + " has " + free_space_in_GiB + " Gib")
+        return False
+    else:
+        print("Enough space: current directory " + d + " has " + free_space_in_GiB + " Gib")
 
     # Limit the total number of jobs per tmp dir. Default to the overall max
     # jobs configuration, but restrict to any configured overrides.
