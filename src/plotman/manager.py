@@ -120,10 +120,7 @@ def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
                 print("Not Enough space: current directory " + str(dstdir) + " has " + str(free_space_in_GiB) + " Gib")
                 while free_space_in_GiB < 1802:
                     print("Try to find a dst with enough space")
-                    if unused_dirs: 
-                        dstdir = random.choice(unused_dirs)
-                    else:
-                        dstdir = max(dir2ph, key=dir2ph.get)
+                    dstdir,_  = random.choice(list(dir2ph.items())) 
                     _, _, free_space = shutil.disk_usage(dstdir)
                     free_space_in_GiB = free_space // (2**30)
                     time.sleep(5)
