@@ -80,13 +80,19 @@ def phases_permit_new_job(phases, d, sched_cfg, dir_cfg):
 
     return True
 
+def get_current_job_count_at_dst(dstdir):
+    current_job_count = subprocess.getoutput("ps aux | grep 'chia plots create' | grep " + dstdir + " | grep -v grep | wc -l")
+    try:
+        current_job_count = int(current_job_count)
+        return current_job_count
+    except Exception as e:
+        pritn(e)
+        return 0
+
+
 def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
     jobs = job.Job.get_running_jobs(dir_cfg.log)
-    f = open("demofile2.txt", "a")
-    f.write(str(jobs))
-    f.close()
-    print(jobs)
-    
+   
     wait_reason = None  # If we don't start a job this iteration, this says why.
 
     youngest_job_age = min(jobs, key=job.Job.get_time_wall).get_time_wall() if jobs else MAX_AGE
@@ -112,11 +118,6 @@ def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
             dir2ph = { d:ph for (d, ph) in dstdirs_to_youngest_phase(jobs).items()
                       if d in dir_cfg.dst and ph is not None}
             
-            f = open("demofile3.txt", "a")
-            f.write(str(dir2ph))
-            f.close()
-            print(dir2ph)
-            
             unused_dirs = [d for d in dir_cfg.dst if d not in dir2ph.keys()]
             dstdir = ''
             if unused_dirs: 
@@ -126,13 +127,15 @@ def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
             
             _, _, free_space = shutil.disk_usage(dstdir)
             free_space_in_GiB = free_space // (2**30)
-            if free_space_in_GiB < 102:
+            cur_job_count = get_current_job_count_at_dst(dstdir)
+            if free_space_in_GiB < 102 * (cur_job_count + 1):
                 print("Not Enough space: current directory " + str(dstdir) + " has " + str(free_space_in_GiB) + " Gib")
-                while free_space_in_GiB < 102:
+                while free_space_in_GiB < 102 * (cur_job_count + 1):
                     print("Try to find a dst with enough space")
                     dstdir,_  = random.choice(list(dir2ph.items())) 
                     _, _, free_space = shutil.disk_usage(dstdir)
                     free_space_in_GiB = free_space // (2**30)
+                    cur_job_count = get_current_job_count_at_dst(dstdir)
                     time.sleep(5)
             else:
                 print("Enough space: current directory " + str(dstdir) + " has " + str(free_space_in_GiB) + " Gib")
