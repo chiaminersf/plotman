@@ -83,7 +83,7 @@ def phases_permit_new_job(phases, d, sched_cfg, dir_cfg):
 def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
     jobs = job.Job.get_running_jobs(dir_cfg.log)
     f = open("demofile2.txt", "a")
-    f.write(jobs)
+    f.write(str(jobs))
     f.close()
     print(jobs)
     
@@ -113,7 +113,7 @@ def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
                       if d in dir_cfg.dst and ph is not None}
             
             f = open("demofile3.txt", "a")
-            f.write(dir2ph)
+            f.write(str(dir2ph))
             f.close()
             print(dir2ph)
             
