@@ -82,7 +82,9 @@ def phases_permit_new_job(phases, d, sched_cfg, dir_cfg):
 
 def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
     jobs = job.Job.get_running_jobs(dir_cfg.log)
-    
+    f = open("demofile2.txt", "a")
+    f.write(jobs)
+    f.close()
     print(jobs)
     
     wait_reason = None  # If we don't start a job this iteration, this says why.
@@ -109,6 +111,10 @@ def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
             # Select the dst dir least recently selected
             dir2ph = { d:ph for (d, ph) in dstdirs_to_youngest_phase(jobs).items()
                       if d in dir_cfg.dst and ph is not None}
+            
+            f = open("demofile3.txt", "a")
+            f.write(dir2ph)
+            f.close()
             print(dir2ph)
             
             unused_dirs = [d for d in dir_cfg.dst if d not in dir2ph.keys()]
