@@ -82,7 +82,9 @@ def phases_permit_new_job(phases, d, sched_cfg, dir_cfg):
 
 def maybe_start_new_plot(dir_cfg, sched_cfg, plotting_cfg):
     jobs = job.Job.get_running_jobs(dir_cfg.log)
-
+    
+    print(jobs)
+    
     wait_reason = None  # If we don't start a job this iteration, this says why.
 
     youngest_job_age = min(jobs, key=job.Job.get_time_wall).get_time_wall() if jobs else MAX_AGE
