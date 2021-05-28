@@ -81,7 +81,7 @@ def phases_permit_new_job(phases, d, sched_cfg, dir_cfg):
     return True
 
 def get_current_job_count_at_dst(dstdir):
-    current_job_count = subprocess.getoutput("ps aux | grep 'chia plots create' | grep " + dstdir + " | grep -v grep | wc -l")
+    current_job_count = subprocess.getoutput("ps awwx | grep 'chia plots create' | grep -w " + dstdir + " | grep -v grep | wc -l")
     try:
         current_job_count = int(current_job_count)
         return current_job_count
